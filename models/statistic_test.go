@@ -1,10 +1,8 @@
-package models_test
+package models
 
 import (
 	"reflect"
 	"testing"
-
-	"github.com/influxdata/influxdb1-client/models"
 )
 
 func TestTags_Merge(t *testing.T) {
@@ -47,7 +45,7 @@ func TestTags_Merge(t *testing.T) {
 
 	for i, example := range examples {
 		i++
-		result := models.StatisticTags(example.Base).Merge(example.Arg)
+		result := StatisticTags(example.Base).Merge(example.Arg)
 		if got, exp := result, example.Result; !reflect.DeepEqual(got, exp) {
 			t.Errorf("[Example %d] got %#v, expected %#v", i, got, exp)
 		}

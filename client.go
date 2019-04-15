@@ -1,5 +1,5 @@
 // Package client (v2) is the current official Go client for InfluxDB.
-package client // import "github.com/influxdata/influxdb1-client/v2"
+package client
 
 import (
 	"bytes"
@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/influxdata/influxdb1-client/models"
+	"github.com/aporeto-inc/influxdb1-client/models"
 )
 
 // HTTPConfig is the config data needed to create an HTTP Client.
@@ -153,7 +153,7 @@ func (c *client) Ping(timeout time.Duration) (time.Duration, string, error) {
 	if err != nil {
 		return 0, "", err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -403,7 +403,7 @@ func (c *client) Write(bp BatchPoints) error {
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -516,7 +516,7 @@ func (c *client) Query(q Query) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer resp.Body.Close() // nolint
 
 	if err := checkResponse(resp); err != nil {
 		return nil, err
@@ -547,7 +547,7 @@ func (c *client) Query(q Query) (*Response, error) {
 		}
 	} else {
 		dec := json.NewDecoder(resp.Body)
-		dec.UseNumber()
+		// dec.UseNumber()
 		decErr := dec.Decode(&response)
 
 		// ignore this error if we got an invalid status code
@@ -667,7 +667,7 @@ type duplexReader struct {
 func (r *duplexReader) Read(p []byte) (n int, err error) {
 	n, err = r.r.Read(p)
 	if err == nil {
-		r.w.Write(p[:n])
+		r.w.Write(p[:n]) // nolint
 	}
 	return n, err
 }
@@ -694,7 +694,7 @@ func NewChunkedResponse(r io.Reader) *ChunkedResponse {
 	resp := &ChunkedResponse{}
 	resp.duplex = &duplexReader{r: rc, w: &resp.buf}
 	resp.dec = json.NewDecoder(resp.duplex)
-	resp.dec.UseNumber()
+	// resp.dec.UseNumber()
 	return resp
 }
 
@@ -708,7 +708,9 @@ func (r *ChunkedResponse) NextResponse() (*Response, error) {
 		// A decoding error happened. This probably means the server crashed
 		// and sent a last-ditch error message to us. Ensure we have read the
 		// entirety of the connection to get any remaining error text.
-		io.Copy(ioutil.Discard, r.duplex)
+		if _, err := io.Copy(ioutil.Discard, r.duplex); err != nil {
+			return nil, err
+		}
 		return nil, errors.New(strings.TrimSpace(r.buf.String()))
 	}
 

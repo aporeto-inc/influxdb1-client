@@ -1,21 +1,19 @@
-package models_test
+package models
 
 import (
 	"hash/fnv"
 	"testing"
 	"testing/quick"
-
-	"github.com/influxdata/influxdb1-client/models"
 )
 
 func TestInlineFNV64aEquivalenceFuzz(t *testing.T) {
 	f := func(data []byte) bool {
 		stdlibFNV := fnv.New64a()
-		stdlibFNV.Write(data)
+		stdlibFNV.Write(data) // nolint
 		want := stdlibFNV.Sum64()
 
-		inlineFNV := models.NewInlineFNV64a()
-		inlineFNV.Write(data)
+		inlineFNV := NewInlineFNV64a()
+		inlineFNV.Write(data) // nolint
 		got := inlineFNV.Sum64()
 
 		return want == got

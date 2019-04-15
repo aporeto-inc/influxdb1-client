@@ -21,7 +21,7 @@ func TestUDPClient_Query(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error.  expected %v, actual %v", nil, err)
 	}
-	defer c.Close()
+	defer c.Close() // nolint
 	query := Query{}
 	_, err = c.Query(query)
 	if err == nil {
@@ -35,7 +35,7 @@ func TestUDPClient_Ping(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error.  expected %v, actual %v", nil, err)
 	}
-	defer c.Close()
+	defer c.Close() // nolint
 
 	rtt, version, err := c.Ping(0)
 	if rtt != 0 || version != "" || err != nil {
@@ -49,7 +49,7 @@ func TestUDPClient_Write(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error.  expected %v, actual %v", nil, err)
 	}
-	defer c.Close()
+	defer c.Close() // nolint
 
 	bp, err := NewBatchPoints(BatchPointsConfig{})
 	if err != nil {
@@ -71,7 +71,7 @@ func TestUDPClient_BadAddr(t *testing.T) {
 	config := UDPConfig{Addr: "foobar@wahoo"}
 	c, err := NewUDPClient(config)
 	if err == nil {
-		defer c.Close()
+		defer c.Close() // nolint
 		t.Error("Expected resolve error")
 	}
 }
@@ -149,7 +149,7 @@ func TestClient_Query(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{}
 	_, err := c.Query(query)
@@ -176,7 +176,7 @@ func TestClient_QueryWithRP(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := NewQueryWithRP("SELECT * FROM m0", "db0", "rp0", "")
 	_, err := c.Query(query)
@@ -194,13 +194,13 @@ func TestClientDownstream500WithBody_Query(t *testing.T) {
 </html>`
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err500page))
+		w.Write([]byte(err500page)) // nolint
 	}))
 	defer ts.Close()
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{}
 	_, err := c.Query(query)
@@ -219,7 +219,7 @@ func TestClientDownstream500_Query(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{}
 	_, err := c.Query(query)
@@ -239,13 +239,13 @@ func TestClientDownstream400WithBody_Query(t *testing.T) {
 </html>`
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte(err403page))
+		w.Write([]byte(err403page)) // nolint
 	}))
 	defer ts.Close()
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{}
 	_, err := c.Query(query)
@@ -264,7 +264,7 @@ func TestClientDownstream400_Query(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{}
 	_, err := c.Query(query)
@@ -280,13 +280,13 @@ func TestClient500_Query(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("X-Influxdb-Version", "1.3.1")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error":"test"}`))
+		w.Write([]byte(`{"error":"test"}`)) // nolint
 	}))
 	defer ts.Close()
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{}
 	resp, err := c.Query(query)
@@ -334,7 +334,7 @@ func TestClientDownstream500WithBody_ChunkedQuery(t *testing.T) {
 </html>`
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err500page))
+		w.Write([]byte(err500page)) // nolint
 	}))
 	defer ts.Close()
 
@@ -361,7 +361,7 @@ func TestClientDownstream500_ChunkedQuery(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{Chunked: true}
 	_, err := c.Query(query)
@@ -377,13 +377,13 @@ func TestClient500_ChunkedQuery(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("X-Influxdb-Version", "1.3.1")
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(`{"error":"test"}`))
+		w.Write([]byte(`{"error":"test"}`)) // nolint
 	}))
 	defer ts.Close()
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{Chunked: true}
 	resp, err := c.Query(query)
@@ -406,13 +406,13 @@ func TestClientDownstream400WithBody_ChunkedQuery(t *testing.T) {
 </html>`
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
-		w.Write([]byte(err403page))
+		w.Write([]byte(err403page)) // nolint
 	}))
 	defer ts.Close()
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{Chunked: true}
 	_, err := c.Query(query)
@@ -431,7 +431,7 @@ func TestClientDownstream400_ChunkedQuery(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{Chunked: true}
 	_, err := c.Query(query)
@@ -446,7 +446,7 @@ func TestClient_BoundParameters(t *testing.T) {
 	var parameterString string
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var data Response
-		r.ParseForm()
+		r.ParseForm() // nolint
 		parameterString = r.FormValue("params")
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
@@ -456,7 +456,7 @@ func TestClient_BoundParameters(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	expectedParameters := map[string]interface{}{
 		"testStringParameter": "testStringValue",
@@ -506,7 +506,7 @@ func TestClient_BasicAuth(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL, Username: "username", Password: "password"}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	query := Query{}
 	_, err := c.Query(query)
@@ -526,7 +526,7 @@ func TestClient_Ping(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	_, _, err := c.Ping(0)
 	if err != nil {
@@ -538,13 +538,13 @@ func TestClient_Concurrent_Use(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{}`))
+		w.Write([]byte(`{}`)) // nolint
 	}))
 	defer ts.Close()
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	var wg sync.WaitGroup
 	wg.Add(3)
@@ -581,7 +581,7 @@ func TestClient_Concurrent_Use(t *testing.T) {
 	go func() {
 		defer wg.Done()
 		for i := 0; i < n; i++ {
-			c.Ping(time.Second)
+			c.Ping(time.Second) // nolint
 		}
 	}()
 
@@ -613,7 +613,7 @@ func TestClient_Write(t *testing.T) {
 
 	config := HTTPConfig{Addr: ts.URL}
 	c, _ := NewHTTPClient(config)
-	defer c.Close()
+	defer c.Close() // nolint
 
 	bp, err := NewBatchPoints(BatchPointsConfig{})
 	if err != nil {
@@ -681,7 +681,7 @@ func TestClient_UserAgent(t *testing.T) {
 
 		config := HTTPConfig{Addr: ts.URL, UserAgent: test.userAgent}
 		c, _ := NewHTTPClient(config)
-		defer c.Close()
+		defer c.Close() // nolint
 
 		receivedUserAgent = ""
 		query := Query{}
@@ -874,7 +874,7 @@ func TestClientConcatURLPath(t *testing.T) {
 	fmt.Println("TestClientConcatURLPath: concat with path 'influxdbproxy' result ", url.String())
 
 	c, _ := NewHTTPClient(HTTPConfig{Addr: url.String()})
-	defer c.Close()
+	defer c.Close() // nolint
 
 	_, _, err := c.Ping(0)
 	if err != nil {
@@ -932,7 +932,7 @@ func TestClient_QueryAsChunk(t *testing.T) {
 
 	query := Query{Chunked: true}
 	resp, err := c.QueryAsChunk(query)
-	defer resp.Close()
+	defer resp.Close() // nolint
 	if err != nil {
 		t.Fatalf("unexpected error.  expected %v, actual %v", nil, err)
 	}

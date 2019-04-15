@@ -81,7 +81,7 @@ func TestParseFloatBytesValid64bitEquivalenceFuzz(t *testing.T) {
 }
 
 func TestParseBoolBytesEquivalence(t *testing.T) {
-	var buf []byte
+	var buf []byte // nolint
 	for _, s := range []string{"1", "t", "T", "TRUE", "true", "True", "0", "f", "F", "FALSE", "false", "False", "fail", "TrUe", "FAlSE", "numbers", ""} {
 		buf = append(buf[:0], s...)
 

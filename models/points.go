@@ -1,5 +1,5 @@
 // Package models implements basic objects used throughout the TICK stack.
-package models // import "github.com/influxdata/influxdb1-client/models"
+package models
 
 import (
 	"bytes"
@@ -15,7 +15,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/influxdata/influxdb1-client/pkg/escape"
+	"github.com/aporeto-inc/influxdb1-client/pkg/escape"
 )
 
 type escapeSet struct {
@@ -277,10 +277,12 @@ func ParseKey(buf []byte) (string, Tags) {
 	return string(name), tags
 }
 
+// ParseKeyBytes parses the given bytes
 func ParseKeyBytes(buf []byte) ([]byte, Tags) {
 	return ParseKeyBytesWithTags(buf, nil)
 }
 
+// ParseKeyBytesWithTags parses the given bytes with tags
 func ParseKeyBytesWithTags(buf []byte, tags Tags) ([]byte, Tags) {
 	// Ignore the error because scanMeasurement returns "missing fields" which we ignore
 	// when just parsing a key
@@ -297,10 +299,12 @@ func ParseKeyBytesWithTags(buf []byte, tags Tags) ([]byte, Tags) {
 	return unescapeMeasurement(name), tags
 }
 
+// ParseTags parses the given tags.
 func ParseTags(buf []byte) Tags {
 	return parseTags(buf, nil)
 }
 
+// ParseName parses the given name.
 func ParseName(buf []byte) []byte {
 	// Ignore the error because scanMeasurement returns "missing fields" which we ignore
 	// when just parsing a key
@@ -1222,6 +1226,7 @@ func scanFieldValue(buf []byte, i int) (int, []byte) {
 	return i, buf[start:i]
 }
 
+// EscapeMeasurement espaces the measurement.
 func EscapeMeasurement(in []byte) []byte {
 	for _, c := range measurementEscapeCodes {
 		if bytes.IndexByte(in, c.k[0]) != -1 {
@@ -1831,7 +1836,7 @@ func (p *point) unmarshalBinary() (Fields, error) {
 // HashID returns a non-cryptographic checksum of the point's key.
 func (p *point) HashID() uint64 {
 	h := NewInlineFNV64a()
-	h.Write(p.key)
+	h.Write(p.key) // nolint
 	sum := h.Sum64()
 	return sum
 }
