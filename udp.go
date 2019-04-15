@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net"
@@ -107,7 +108,15 @@ func (uc *udpclient) Query(q Query) (*Response, error) {
 	return nil, fmt.Errorf("Querying via UDP is not supported")
 }
 
+func (uc *udpclient) QueryWithContext(ctx context.Context, q Query) (*Response, error) {
+	return nil, fmt.Errorf("Querying via UDP is not supported")
+}
+
 func (uc *udpclient) QueryAsChunk(q Query) (*ChunkedResponse, error) {
+	return nil, fmt.Errorf("Querying via UDP is not supported")
+}
+
+func (uc *udpclient) QueryAsChunkWithContext(ctx context.Context, q Query) (*ChunkedResponse, error) {
 	return nil, fmt.Errorf("Querying via UDP is not supported")
 }
 

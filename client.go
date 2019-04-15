@@ -3,6 +3,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -78,9 +79,17 @@ type Client interface {
 	// the UDP client.
 	Query(q Query) (*Response, error)
 
+	// QueryWithContext makes an InfluxDB Query on the database. This will fail if using
+	// the UDP client. It will cancel if the given context is canceled.
+	QueryWithContext(ctx context.Context, q Query) (*Response, error)
+
 	// QueryAsChunk makes an InfluxDB Query on the database. This will fail if using
 	// the UDP client.
 	QueryAsChunk(q Query) (*ChunkedResponse, error)
+
+	// QueryAsChunkWithContext makes an InfluxDB Query on the database. This will fail if using
+	// the UDP client. It will cancel if the given context is canceled.
+	QueryAsChunkWithContext(ctx context.Context, q Query) (*ChunkedResponse, error)
 
 	// Close releases any resources a Client may be using.
 	Close() error
@@ -500,10 +509,17 @@ type Result struct {
 
 // Query sends a command to the server and returns the Response.
 func (c *client) Query(q Query) (*Response, error) {
+	return c.QueryWithContext(context.Background(), q)
+}
+
+// QueryWithContext sends a command to the server and returns the Response.
+func (c *client) QueryWithContext(ctx context.Context, q Query) (*Response, error) {
 	req, err := c.createDefaultRequest(q)
 	if err != nil {
 		return nil, err
 	}
+	req = req.WithContext(ctx)
+
 	params := req.URL.Query()
 	if q.Chunked {
 		params.Set("chunked", "true")
@@ -570,10 +586,16 @@ func (c *client) Query(q Query) (*Response, error) {
 
 // QueryAsChunk sends a command to the server and returns the Response.
 func (c *client) QueryAsChunk(q Query) (*ChunkedResponse, error) {
+	return c.QueryAsChunkWithContext(context.Background(), q)
+}
+
+func (c *client) QueryAsChunkWithContext(ctx context.Context, q Query) (*ChunkedResponse, error) {
 	req, err := c.createDefaultRequest(q)
 	if err != nil {
 		return nil, err
 	}
+	req = req.WithContext(ctx)
+
 	params := req.URL.Query()
 	params.Set("chunked", "true")
 	if q.ChunkSize > 0 {
